@@ -5,6 +5,8 @@
 //  Created by IDEA Lab on 2021/4/12.
 //
 
+// 📓：后台保持计时
+// 📓：分秒换算
 // 📓：使暂停时也能 mark
 // 📓：增加 stop/reset 按钮
 // ✅：计时、滑动列表的异步处理
@@ -13,6 +15,7 @@
 // 📓：调整复制通知的 animation
 // ✅：暂停时禁用 mark
 // ✅：Mark 按钮触发框
+// ✅：切换 Color Scheme 模式学习
 
 import SwiftUI
 
@@ -27,12 +30,15 @@ class StopWatchManager: ObservableObject {
     func start() {
         timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
             self.timeCount += 0.1
+            // 使滑动列表的同时也能计数
             RunLoop.main.add(self.timer, forMode: .common)
         }
     }
     
     func pause() {
         timer.invalidate()
+
+
     }
     
     func stop() {
@@ -61,10 +67,10 @@ struct ContentView: View {
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                Color.black
+                Color(UIColor(named: "AccentColor")!)
                     .edgesIgnoringSafeArea(/*@START_MENU_TOKEN@*/ .all/*@END_MENU_TOKEN@*/)
                 ZStack {
-                    VStack {
+                    VStack(spacing: 0) {
                         ZStack {
                             Button(action: {}, label: {})
                                 .frame(width: geo.size.width - 44, height: 100)
@@ -115,6 +121,9 @@ struct ContentView: View {
                                         // 点击 Mark 时自动更新至底部
                                         .onAppear {
                                             scrollview.scrollTo(self.stopWatchManager.laps.endIndex - 1)
+                                                
+                                         
+                                                
                                             // print("hihi\(self.stopWatchManager.laps.endIndex)")
                                         }
    
@@ -141,8 +150,6 @@ struct ContentView: View {
                                     UIPasteboard.general.string = self.stopWatchManager.str
                                 }
                             }
-                        
-                            // .colorMultiply(Color.white.opacity(0.1))
                         }
                         .frame(width: geo.size.width - 44, alignment: .center)
                         .background(Color.white.opacity(0.1))
@@ -175,11 +182,11 @@ struct ContentView: View {
                                 .frame(width: 20)
                         
                             Button(action: {
-                                if self.isPlaying == true {
-                                    print(self.stopWatchManager.timeCount)
-                                    stopWatchManager.addLap(time: stopWatchManager.timeCount)
-                                    print(self.stopWatchManager.laps)
-                                }
+                                // if self.isPlaying == true {
+                                print(self.stopWatchManager.timeCount)
+                                stopWatchManager.addLap(time: stopWatchManager.timeCount)
+                                print(self.stopWatchManager.laps)
+                                // }
                                 
                             }, label: {
                                 Text("mark")
@@ -213,6 +220,8 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             ContentView()
+            ContentView()
+                .preferredColorScheme(.dark)
         }
     }
 }
